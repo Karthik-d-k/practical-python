@@ -2,6 +2,7 @@
 #
 # Exercise 1.27
 
+import sys
 import csv
 
 def portfolio_cost(filename):
@@ -20,9 +21,7 @@ def portfolio_cost(filename):
     
     n_stocks = [int(n) if n != '' else 0 for n in n_stocks]
     stock_prices =  [float(p) if p != '' else 0  for p in stock_prices]
-
     Total_cost = sum([(n * p) for n, p in zip(n_stocks, stock_prices)])
-    print(f"{n_stocks=} {stock_prices=}")
     
     return Total_cost
 
@@ -43,11 +42,14 @@ def portfolio_cost_using_csv(filename):
     
     n_stocks = [int(n) if n != '' else 0 for n in n_stocks]
     stock_prices =  [float(p) if p != '' else 0  for p in stock_prices]
-
     Total_cost = sum([(n * p) for n, p in zip(n_stocks, stock_prices)])
-    print(f"{n_stocks=} {stock_prices=}")
     
     return Total_cost
 
-cost = portfolio_cost_using_csv('Data/portfolio.csv')
+if len(sys.argv) == 2:
+    filename = sys.argv[1]
+else:
+    filename = 'Data/portfolio.csv'
+  
+cost = portfolio_cost_using_csv(filename)
 print('Total cost:', cost)
