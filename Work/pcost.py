@@ -30,28 +30,29 @@ def portfolio_cost_using_csv(filename):
     """ 
     using csv builtin module to find total portfolio cost
     """
-    n_stocks = []
-    stock_prices = []
+    nshares = 0
+    price = 0
     Total_cost = 0
 
     with open(filename) as f :
         rows = csv.reader(f)
         headers = next(rows)
-        for line_no, line in enumerate(rows, start=1):
+        for rowno, row in enumerate(rows, start=1):
+            record = dict(zip(headers, row))
             try:
-                n_stocks.append(int(line[1]))
-                stock_prices.append(float(line[2])) 
+                nshares = int(record['shares'])
+                price = float(record['price'])
+                Total_cost += nshares * price
+            # This catches errors in int() and float() conversions above
             except ValueError:
-                print(f'Row {line_no}: Bad row: {line}')            
-    
-    Total_cost = sum([(n * p) for n, p in zip(n_stocks, stock_prices)])
+                print(f'Row {rowno}: Bad row: {row}')         
     
     return Total_cost
 
 if len(sys.argv) == 2:
     filename = sys.argv[1]
 else:
-    filename = 'Data/portfolio.csv'
+    filename = 'Data/portfoliodate.csv'
   
 cost = portfolio_cost_using_csv(filename)
 print('Total cost:', cost)

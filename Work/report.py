@@ -9,18 +9,20 @@ def read_portfolio(file_portfolio):
     """ 
     opens a given portfolio file and reads it into a list of dictionary.
     """
-    n_stocks = []
-    stock_prices = []
     portfolio = []
 
     with open(file_portfolio) as f :
         rows = csv.reader(f)
         headers = next(rows)
-        for row in rows:
-            if row != [] :
-                row_dict = {'name' : row[0], 'shares' : int(row[1]), 'price' : float(row[2])}
+        for rowno, row in enumerate(rows, start=1):
+            record = dict(zip(headers, row))
+            try:
+                row_dict = {'name' : record['name'], 'shares' : int(record['shares']), 'price' : float(record['price'])}
                 portfolio.append(row_dict)
-    
+            # This catches errors in int() and float() conversions above
+            except ValueError:
+                print(f'Row {rowno}: Bad row: {row}')
+                
     return portfolio
 
 def read_prices(file_prices):
@@ -43,7 +45,7 @@ if len(sys.argv) == 3:
     file_portfolio = sys.argv[1]
     file_prices = sys.argv[2]
 else:
-    file_portfolio = 'Data/portfolio.csv'
+    file_portfolio = 'Data/portfoliodate.csv'
     file_prices = 'Data/prices.csv'
 
 list_stocks = read_portfolio(file_portfolio)
