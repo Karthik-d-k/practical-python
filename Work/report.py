@@ -58,3 +58,23 @@ if (gain_or_loss > 0):
     print(f"gain = {gain_or_loss}")
 else :
     print(f"loss = {-gain_or_loss}")
+
+def make_report(list_stocks, dict_prices):
+    """
+    takes a list of stocks and dictionary of prices as input and returns a list of tuples 
+    containing the rows of Name, Shares, Price and Change.
+    """
+    name = [stock['name'] for stock in list_stocks]
+    shares = [stock['shares'] for stock in list_stocks]
+    price = [dict_prices[stock['name']] for stock in list_stocks]
+    change = [(dict_prices[stock['name']] - stock['price']) for stock in list_stocks]
+    
+    return zip(name, shares, price, change)
+
+report = make_report(list_stocks, dict_prices)
+headers = ('Name', 'Shares', 'Price', 'Change')
+
+print(f'{headers[0]:>10s} {headers[1]:>10s} {headers[2]:>10s} {headers[3]:>10s}')
+print(f"{'-' * 10} {'-' * 10} {'-' * 10} {'-' * 10}")
+for name, shares, price, change in report:
+    print(f'{name:>10s} {shares:>10d} {("$" + str(price)):>10s} {change:>10.2f}')
