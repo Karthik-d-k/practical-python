@@ -15,12 +15,13 @@ def portfolio_cost(filename):
 
     with open(filename, 'rt') as f :
         headers = next(f)
-        for line in f:
-            n_stocks.append(line.split(',')[1])
-            stock_prices.append(line.split(',')[2].strip())    
+        for line_no, line in enumerate(f, start=1):
+            try:
+                n_stocks.append(int(line.split(',')[1]))
+                stock_prices.append(float(line.split(',')[2]))
+            except ValueError:
+                print(f'Row {line_no}: Bad row: {line}')
     
-    n_stocks = [int(n) if n != '' else 0 for n in n_stocks]
-    stock_prices =  [float(p) if p != '' else 0  for p in stock_prices]
     Total_cost = sum([(n * p) for n, p in zip(n_stocks, stock_prices)])
     
     return Total_cost
@@ -36,12 +37,13 @@ def portfolio_cost_using_csv(filename):
     with open(filename) as f :
         rows = csv.reader(f)
         headers = next(rows)
-        for line in rows:
-            n_stocks.append(line[1])
-            stock_prices.append(line[2])    
+        for line_no, line in enumerate(rows, start=1):
+            try:
+                n_stocks.append(int(line[1]))
+                stock_prices.append(float(line[2])) 
+            except ValueError:
+                print(f'Row {line_no}: Bad row: {line}')            
     
-    n_stocks = [int(n) if n != '' else 0 for n in n_stocks]
-    stock_prices =  [float(p) if p != '' else 0  for p in stock_prices]
     Total_cost = sum([(n * p) for n, p in zip(n_stocks, stock_prices)])
     
     return Total_cost
