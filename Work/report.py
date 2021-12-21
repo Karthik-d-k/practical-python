@@ -41,26 +41,6 @@ def read_prices(file_prices):
             
     return prices
 
-if len(sys.argv) == 3:
-    file_portfolio = sys.argv[1]
-    file_prices = sys.argv[2]
-else:
-    file_portfolio = 'Data/portfoliodate.csv'
-    file_prices = 'Data/prices.csv'
-
-list_stocks = read_portfolio(file_portfolio)
-dict_prices = read_prices(file_prices)
-
-old_value = sum([(stock['shares'] * stock['price']) for stock in list_stocks])
-print(f"old value of portfolio = {old_value}")
-new_value = sum([(stock['shares'] * dict_prices[stock['name']]) for stock in list_stocks])
-print(f"current value of portfolio = {new_value}")
-gain_or_loss = (new_value - old_value)
-if (gain_or_loss > 0):
-    print(f"gain = {gain_or_loss}")
-else :
-    print(f"loss = {-gain_or_loss}")
-
 def make_report(list_stocks, dict_prices):
     """
     takes a list of stocks and dictionary of prices as input and returns a list of tuples 
@@ -73,10 +53,45 @@ def make_report(list_stocks, dict_prices):
     
     return zip(name, shares, price, change)
 
-report = make_report(list_stocks, dict_prices)
-headers = ('Name', 'Shares', 'Price', 'Change')
+def print_report(report):
+    """
+    prints out the report.
+    """
+    headers = ('Name', 'Shares', 'Price', 'Change')
+    print(f'{headers[0]:>10s} {headers[1]:>10s} {headers[2]:>10s} {headers[3]:>10s}')
+    print(f"{'-' * 10} {'-' * 10} {'-' * 10} {'-' * 10}")
+    for name, shares, price, change in report:
+        print(f'{name:>10s} {shares:>10d} {("$" + str(price)):>10s} {change:>10.2f}')
 
-print(f'{headers[0]:>10s} {headers[1]:>10s} {headers[2]:>10s} {headers[3]:>10s}')
-print(f"{'-' * 10} {'-' * 10} {'-' * 10} {'-' * 10}")
-for name, shares, price, change in report:
-    print(f'{name:>10s} {shares:>10d} {("$" + str(price)):>10s} {change:>10.2f}')
+def print_loss_or_gain(list_stocks, dict_prices):
+    """
+    prints out loss/gain.
+    """
+    old_value = sum([(stock['shares'] * stock['price']) for stock in list_stocks])
+    print(f"old value of portfolio = {old_value}")
+    new_value = sum([(stock['shares'] * dict_prices[stock['name']]) for stock in list_stocks])
+    print(f"current value of portfolio = {new_value}")
+    gain_or_loss = (new_value - old_value)
+    if (gain_or_loss > 0):
+        print(f"gain = {gain_or_loss:>10.2f}\n")
+    else:
+        print(f"loss = {-gain_or_loss:>10.2f}\n")
+
+def portfolio_report(portfolio_filename, prices_filename):
+    """
+    A top-level function for program execution.
+    """
+    list_stocks = read_portfolio(portfolio_filename)
+    dict_prices = read_prices(prices_filename)
+    print_loss_or_gain(list_stocks, dict_prices)
+    report = make_report(list_stocks, dict_prices)
+    print_report(report)
+
+if len(sys.argv) == 3:
+    portfolio_filename = sys.argv[1]
+    prices_filename = sys.argv[2]
+else:
+    portfolio_filename = 'Data/portfoliodate.csv'
+    prices_filename = 'Data/prices.csv'
+    
+portfolio_report(portfolio_filename, prices_filename)
