@@ -2,55 +2,42 @@
 #
 # Exercise 2.4
 
-import csv
 import sys
+import fileparse
 
 def read_portfolio(file_portfolio):
-    """ 
+    """
     opens a given portfolio file and reads it into a list of dictionary.
     """
     portfolio = []
 
-    with open(file_portfolio) as f :
-        rows = csv.reader(f)
-        headers = next(rows)
-        for rowno, row in enumerate(rows, start=1):
-            record = dict(zip(headers, row))
-            try:
-                row_dict = {'name' : record['name'], 'shares' : int(record['shares']), 'price' : float(record['price'])}
-                portfolio.append(row_dict)
-            # This catches errors in int() and float() conversions above
-            except ValueError:
-                print(f'Row {rowno}: Bad row: {row}')
-                
+    portfolio = fileparse.parse_csv(file_portfolio, select=['name', 'shares', 'price'], types=[str, int, float], has_headers=True, delimiter=',', silence_errors=False)
+
     return portfolio
 
 def read_prices(file_prices):
     """
-    reads a set of prices from filename into a dictionary 
-    where the keys of the dictionary are the stock names and 
+    reads a set of prices from filename into a dictionary
+    where the keys of the dictionary are the stock names and
     the values in the dictionary are the stock prices.
     """
     prices = {}
 
-    with open(file_prices) as f :
-        rows = csv.reader(f)
-        for row in rows:
-            if row != [] :
-                prices[row[0]] = float(row[1])
-            
+    prices_list = fileparse.parse_csv(file_prices, select=None, types=[str, float], has_headers=False, delimiter=',', silence_errors=False)
+    prices = {k:v for k, v in prices_list}
+
     return prices
 
 def make_report(list_stocks, dict_prices):
     """
-    takes a list of stocks and dictionary of prices as input and returns a list of tuples 
+    takes a list of stocks and dictionary of prices as input and returns a list of tuples
     containing the rows of Name, Shares, Price and Change.
     """
     name = [stock['name'] for stock in list_stocks]
     shares = [stock['shares'] for stock in list_stocks]
     price = [dict_prices[stock['name']] for stock in list_stocks]
     change = [(dict_prices[stock['name']] - stock['price']) for stock in list_stocks]
-    
+
     return zip(name, shares, price, change)
 
 def print_report(report):
@@ -93,5 +80,5 @@ if len(sys.argv) == 3:
 else:
     portfolio_filename = 'Data/portfoliodate.csv'
     prices_filename = 'Data/prices.csv'
-    
+
 portfolio_report(portfolio_filename, prices_filename)

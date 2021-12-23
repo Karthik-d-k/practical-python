@@ -14,9 +14,9 @@ def parse_csv(filename, select=None, types=None, has_headers=True, delimiter=','
         if has_headers:
             # Read the file headers
             headers = next(rows)
-        else:   
+        else:
             if select != None:
-                # Exception gets raised if both the select and has_headers=False arguments are passed  
+                # Exception gets raised if both the select and has_headers=False arguments are passed
                 raise RuntimeError("select argument requires column headers")
         # If a column selector was given, find indices of the specified columns.
         # Also narrow the set of headers used for resulting dictionaries
@@ -25,11 +25,9 @@ def parse_csv(filename, select=None, types=None, has_headers=True, delimiter=','
             headers = select
         else:
             indices = []
-        
+
         records = []
-        line_no = 0
-        for row in rows:
-            line_no += 1   # increment line no for each row
+        for rowno, row in enumerate(rows, start=1):
             if not row:    # Skip rows with no data
                 continue
             # Filter the row if specific columns were selected
@@ -41,8 +39,8 @@ def parse_csv(filename, select=None, types=None, has_headers=True, delimiter=','
                     row = [func(val) for func, val in zip(types, row)]
                 except ValueError as e:
                     if not(silence_errors):
-                        print(f"Row {line_no}: Couldn't convert {row}")
-                        print(f"Row {line_no}: Reason {e}")
+                        print(f"Row {rowno}: Couldn't convert {row}")
+                        print(f"Row {rowno}: Reason {e}")
                     continue
             if has_headers:
                 # Make a dictionary
