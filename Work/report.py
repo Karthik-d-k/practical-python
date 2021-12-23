@@ -10,8 +10,8 @@ def read_portfolio(file_portfolio):
     opens a given portfolio file and reads it into a list of dictionary.
     """
     portfolio = []
-
-    portfolio = fileparse.parse_csv(file_portfolio, select=['name', 'shares', 'price'], types=[str, int, float], has_headers=True, delimiter=',', silence_errors=False)
+    with open(file_portfolio) as lines:
+        portfolio = fileparse.parse_csv(lines, select=['name', 'shares', 'price'], types=[str, int, float])
 
     return portfolio
 
@@ -22,9 +22,9 @@ def read_prices(file_prices):
     the values in the dictionary are the stock prices.
     """
     prices = {}
-
-    prices_list = fileparse.parse_csv(file_prices, select=None, types=[str, float], has_headers=False, delimiter=',', silence_errors=False)
-    prices = {k:v for k, v in prices_list}
+    with open(file_prices) as lines:
+        prices_list = fileparse.parse_csv(lines, types=[str, float], has_headers=False)
+        prices = {k:v for k, v in prices_list}
 
     return prices
 
