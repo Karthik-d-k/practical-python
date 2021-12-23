@@ -4,7 +4,7 @@
 
 import csv
 
-def parse_csv(filename, select=None, types=None, has_headers=True, delimiter=';'):
+def parse_csv(filename, select=None, types=None, has_headers=True, delimiter=','):
     '''
     Parse a CSV file into a list of records.
     '''
@@ -14,19 +14,22 @@ def parse_csv(filename, select=None, types=None, has_headers=True, delimiter=';'
         if has_headers:
             # Read the file headers
             headers = next(rows)
-
-            # If a column selector was given, find indices of the specified columns.
-            # Also narrow the set of headers used for resulting dictionaries
-            if select:
-                indices = [headers.index(colname) for colname in select]
-                headers = select
-            else:
-                indices = []
+        else:   
+            if select != None:
+                # Exception gets raised if both the select and has_headers=False arguments are passed  
+                raise RuntimeError("select argument requires column headers")
+        # If a column selector was given, find indices of the specified columns.
+        # Also narrow the set of headers used for resulting dictionaries
+        if select:
+            indices = [headers.index(colname) for colname in select]
+            headers = select
         else:
             indices = []
-
+        
         records = []
+        line_no = 0
         for row in rows:
+            line_no += 1   # increment line no for each row
             if not row:    # Skip rows with no data
                 continue
             # Filter the row if specific columns were selected
@@ -34,15 +37,18 @@ def parse_csv(filename, select=None, types=None, has_headers=True, delimiter=';'
                 row = [row[index] for index in indices]
             # Apply type-conversions to data if specified
             if types:
-                row = [func(val) for func, val in zip(types, row)]
-
+                try:
+                    row = [func(val) for func, val in zip(types, row)]
+                except ValueError as e:
+                    print(f"Row {line_no}: Couldn't convert {row}")
+                    print(f"Row {line_no}: Reason {e}")
+                    continue
             if has_headers:
                 # Make a dictionary
                 record = dict(zip(headers, row))
-                records.append(record)
             else:
                 # Make a tuple
                 record = tuple(row)
-                records.append(record)
+            records.append(record)
 
     return records
