@@ -1,8 +1,8 @@
+#!/usr/bin/env python3
 # report.py
 #
 # Exercise 2.4
 
-import sys
 import fileparse
 
 def read_portfolio(file_portfolio):
@@ -74,11 +74,14 @@ def portfolio_report(portfolio_filename, prices_filename):
     report = make_report(list_stocks, dict_prices)
     print_report(report)
 
-if len(sys.argv) == 3:
-    portfolio_filename = sys.argv[1]
-    prices_filename = sys.argv[2]
-else:
-    portfolio_filename = 'Data/portfoliodate.csv'
-    prices_filename = 'Data/prices.csv'
+def main(argv):
+    if len(argv) != 3:
+        raise SystemExit(f'Usage: {argv[0]} ' 'portfoliofile pricefile')
+        
+    portfolio_filename = argv[1]
+    prices_filename = argv[2]
+    portfolio_report(portfolio_filename, prices_filename)
 
-portfolio_report(portfolio_filename, prices_filename)
+if __name__ == '__main__':
+    import sys
+    main(sys.argv)
