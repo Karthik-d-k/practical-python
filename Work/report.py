@@ -5,6 +5,7 @@
 
 import stock
 import fileparse
+import tableformat
 
 def read_portfolio(file_portfolio):
     """
@@ -43,15 +44,14 @@ def make_report(list_stocks, dict_prices):
 
     return zip(name, shares, price, change)
 
-def print_report(report):
+def print_report(report, formatter):
     """
-    prints out the report.
+    Print a nicely formated table from a list of (name, shares, price, change) tuples.
     """
-    headers = ('Name', 'Shares', 'Price', 'Change')
-    print(f'{headers[0]:>10s} {headers[1]:>10s} {headers[2]:>10s} {headers[3]:>10s}')
-    print(f"{'-' * 10} {'-' * 10} {'-' * 10} {'-' * 10}")
+    formatter.headings(['Name','Shares','Price','Change'])
     for name, shares, price, change in report:
-        print(f'{name:>10s} {shares:>10d} {("$" + str(price)):>10s} {change:>10.2f}')
+        rowdata = [name, str(shares), f'{price:0.2f}', f'{change:0.2f}']
+        formatter.row(rowdata)
 
 def print_loss_or_gain(list_stocks, dict_prices):
     """
@@ -67,23 +67,29 @@ def print_loss_or_gain(list_stocks, dict_prices):
     else:
         print(f"loss = {-gain_or_loss:>10.2f}\n")
 
-def portfolio_report(portfolio_filename, prices_filename):
+def portfolio_report(portfolio_filename, prices_filename, fmt='txt'):
     """
-    A top-level function for program execution.
+    Make a stock report given portfolio and price data files.
     """
-    list_stocks = read_portfolio(portfolio_filename)
-    dict_prices = read_prices(prices_filename)
-    print_loss_or_gain(list_stocks, dict_prices)
-    report = make_report(list_stocks, dict_prices)
-    print_report(report)
+    # Read data files
+    portfolio = read_portfolio(portfolio_filename)
+    prices = read_prices(prices_filename)
+
+    # Create the report data
+    report = make_report(portfolio, prices)
+
+    # Print it out
+    formatter = tableformat.create_formatter(fmt)
+    print_report(report, formatter)
 
 def main(argv):
-    if len(argv) != 3:
+    if len(argv) < 3:
         raise SystemExit(f'Usage: {argv[0]} ' 'portfoliofile pricefile')
         
     portfolio_filename = argv[1]
     prices_filename = argv[2]
-    portfolio_report(portfolio_filename, prices_filename)
+    fmt = argv[3] if len(argv) == 4 else 'txt'
+    portfolio_report(portfolio_filename, prices_filename, fmt)
 
 if __name__ == '__main__':
     import sys
