@@ -3,16 +3,19 @@
 #
 # Exercise 2.4
 
+import stock
 import fileparse
 
 def read_portfolio(file_portfolio):
     """
-    opens a given portfolio file and reads it into a list of dictionary.
+    opens a given portfolio file and reads it into a list of stock instances.
     """
+    portdicts = []
     portfolio = []
     with open(file_portfolio) as lines:
-        portfolio = fileparse.parse_csv(lines, select=['name', 'shares', 'price'], types=[str, int, float])
-
+        portdicts = fileparse.parse_csv(lines, select=['name', 'shares', 'price'], types=[str, int, float])  
+    portfolio = [stock.Stock(d['name'], d['shares'], d['price']) for d in portdicts]
+    
     return portfolio
 
 def read_prices(file_prices):
@@ -33,10 +36,10 @@ def make_report(list_stocks, dict_prices):
     takes a list of stocks and dictionary of prices as input and returns a list of tuples
     containing the rows of Name, Shares, Price and Change.
     """
-    name = [stock['name'] for stock in list_stocks]
-    shares = [stock['shares'] for stock in list_stocks]
-    price = [dict_prices[stock['name']] for stock in list_stocks]
-    change = [(dict_prices[stock['name']] - stock['price']) for stock in list_stocks]
+    name = [s.name for s in list_stocks]
+    shares = [s.shares for s in list_stocks]
+    price = [dict_prices[s.name] for s in list_stocks]
+    change = [(dict_prices[s.name] - s.price) for s in list_stocks]
 
     return zip(name, shares, price, change)
 
@@ -54,9 +57,9 @@ def print_loss_or_gain(list_stocks, dict_prices):
     """
     prints out loss/gain.
     """
-    old_value = sum([(stock['shares'] * stock['price']) for stock in list_stocks])
+    old_value = sum([s.cost() for s in list_stocks])
     print(f"old value of portfolio = {old_value}")
-    new_value = sum([(stock['shares'] * dict_prices[stock['name']]) for stock in list_stocks])
+    new_value = sum([(s.shares * dict_prices[s.name]) for s in list_stocks])
     print(f"current value of portfolio = {new_value}")
     gain_or_loss = (new_value - old_value)
     if (gain_or_loss > 0):
