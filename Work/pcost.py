@@ -13,7 +13,7 @@ def portfolio_cost(filename):
     records = []
 
     records = report.read_portfolio(filename)
-    Total_cost = sum([s.cost() for s in records])
+    Total_cost = sum([s.cost for s in records])
 
     return Total_cost
 
