@@ -12,13 +12,11 @@ def read_portfolio(file_portfolio, **opts):
     """
     opens a given portfolio file and reads it into a list of stock instances.
     """
-    portdicts = []
     portfolio = []
     with open(file_portfolio) as lines:
-        portdicts = fileparse.parse_csv(lines, select=['name', 'shares', 'price'], types=[str, int, float], **opts)
-    portfolio = [Stock(**d) for d in portdicts]
+        portfolio = Portfolio.from_csv(lines, **opts)
     
-    return Portfolio(portfolio)
+    return portfolio
 
 def read_prices(file_prices):
     """
