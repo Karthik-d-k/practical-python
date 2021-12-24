@@ -3,9 +3,10 @@
 #
 # Exercise 2.4
 
-import stock
 import fileparse
 import tableformat
+from stock import Stock
+from portfolio import Portfolio
 
 def read_portfolio(file_portfolio):
     """
@@ -15,9 +16,9 @@ def read_portfolio(file_portfolio):
     portfolio = []
     with open(file_portfolio) as lines:
         portdicts = fileparse.parse_csv(lines, select=['name', 'shares', 'price'], types=[str, int, float])  
-    portfolio = [stock.Stock(d['name'], d['shares'], d['price']) for d in portdicts]
+    portfolio = [Stock(d['name'], d['shares'], d['price']) for d in portdicts]
     
-    return portfolio
+    return Portfolio(portfolio)
 
 def read_prices(file_prices):
     """

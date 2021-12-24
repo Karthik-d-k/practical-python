@@ -9,13 +9,9 @@ def portfolio_cost(filename):
     """
     using report.read_portfolio() to find total portfolio cost
     """
-    Total_cost = 0
-    records = []
-
-    records = report.read_portfolio(filename)
-    Total_cost = sum([s.cost for s in records])
-
-    return Total_cost
+    portfolio = report.read_portfolio(filename)
+    
+    return portfolio.total_cost
 
 def main(argv):
     if len(argv) != 2:
